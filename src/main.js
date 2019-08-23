@@ -132,7 +132,7 @@ function setupPackage( r ){
     }
 
     if( install.length ){
-        //installPack( install, r );
+        installPack( install, r );
         //shell.sleep( 5 );
         delete require.cache[require.resolve(r.package)]
         pack = require( r.package );
