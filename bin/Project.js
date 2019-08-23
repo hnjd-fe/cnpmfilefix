@@ -97,7 +97,7 @@ var Project = function () {
 
             var sudo = '';
 
-            if (_shelljs2.default.witch('sudo')) {
+            if (_shelljs2.default.which('sudo')) {
                 sudo = 'sudo';
             }
 

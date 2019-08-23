@@ -61,7 +61,7 @@ export default class Project {
 
         let sudo = '';
 
-        if( shell.witch( 'sudo' ) ){
+        if( shell.which( 'sudo' ) ){
             sudo = 'sudo'
         }
 
