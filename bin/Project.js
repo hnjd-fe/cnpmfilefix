@@ -95,12 +95,18 @@ var Project = function () {
                 return;
             }
 
+            var sudo = '';
+
+            if (_shelljs2.default.witch('sudo')) {
+                sudo = 'sudo';
+            }
+
             var dir = item.replace(/\/\-\/.*/, '/-/');
             var filepath = item.replace(/.*?\/nfs\//g, '/').replace(/\/\-\//, '/download/');
             var resolveUrl = "" + this.info.config.resolveRegistry + filepath;
 
-            var dircmd = "sudo mkdir -p " + dir;
-            var wgetcmd = "sudo wget --no-check-certificat " + resolveUrl + " -O " + item;
+            var dircmd = sudo + " mkdir -p " + dir;
+            var wgetcmd = sudo + " wget --no-check-certificat " + resolveUrl + " -O " + item;
 
             /*
             console.info( "\n" );

@@ -59,12 +59,18 @@ export default class Project {
             return;
         }
 
+        let sudo = '';
+
+        if( shell.witch( 'sudo' ) ){
+            sudo = 'sudo'
+        }
+
         let dir = item.replace( /\/\-\/.*/, '/-/' );
         let filepath = item.replace( /.*?\/nfs\//g, '/' ).replace( /\/\-\//, '/download/');
         let resolveUrl = `${this.info.config.resolveRegistry}${filepath}`;
 
-        let dircmd = `sudo mkdir -p ${dir}`;
-        let wgetcmd = `sudo wget --no-check-certificat ${resolveUrl} -O ${item}`;
+        let dircmd = `${sudo} mkdir -p ${dir}`;
+        let wgetcmd = `${sudo} wget --no-check-certificat ${resolveUrl} -O ${item}`;
 
         /*
         console.info( "\n" );
