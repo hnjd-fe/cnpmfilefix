@@ -66,13 +66,15 @@ export default class Project {
         let dircmd = `sudo mkdir -p ${dir}`;
         let wgetcmd = `sudo wget --no-check-certificat ${resolveUrl} -O ${item}`;
 
-        console.log( "\n" );
-        console.log( 'item', item);
-        console.log( 'dir', dir );
-        console.log( 'filepath', filepath );
-        console.log( 'resolveUrl',  resolveUrl );
-        console.log( 'dircmd', dircmd );
-        console.log( 'wgetcmd', wgetcmd);
+        /*
+        console.info( "\n" );
+        console.info( 'item', item);
+        console.info( 'dir', dir );
+        console.info( 'filepath', filepath );
+        console.info( 'resolveUrl',  resolveUrl );
+        console.info( 'dircmd', dircmd );
+        */
+        console.info( 'wgetcmd', wgetcmd);
 
         shell.exec( dircmd  );
         shell.exec( wgetcmd );

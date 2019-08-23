@@ -67,8 +67,15 @@ var App = function () {
         this.logDir = _path2.default.join(this.projectRoot, this.projectInfo.config.logsPath);
         this.cmd = "find " + this.logDir + " -type f -mtime " + this.projectInfo.config.lastDay + " -exec ag \"no such file or directory\" {} \\;";
 
-        console.log(info(packJSON.name));
-        console.log(['appRoot: ' + this.appRoot, 'projectRoot: ' + this.projectRoot, 'logDir: ' + this.logDir, 'cmd: ' + this.cmd].join("\n"));
+        /*
+        console.log( info( packJSON.name ) );
+        console.log( [ 
+            'appRoot: ' + this.appRoot
+            , 'projectRoot: ' + this.projectRoot 
+            , 'logDir: ' + this.logDir
+            , 'cmd: ' + this.cmd
+            ].join("\n") );
+        */
 
         this.init();
     }
@@ -76,6 +83,11 @@ var App = function () {
     _createClass(App, [{
         key: "init",
         value: function init() {
+            if (!_shelljs2.default.which('wget')) {
+                console.error(error('cnpmfilefix - wget command not found!'));
+                return;
+            }
+
             if (!_shelljs2.default.which('find')) {
                 console.error(error('cnpmfilefix - find command not found!'));
                 return;

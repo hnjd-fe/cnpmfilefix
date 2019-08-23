@@ -32,6 +32,7 @@ export default class App {
         this.logDir = path.join( this.projectRoot, this.projectInfo.config.logsPath  );
         this.cmd = `find ${this.logDir} -type f -mtime ${this.projectInfo.config.lastDay} -exec ag "no such file or directory" {} \\;`
 
+        /*
         console.log( info( packJSON.name ) );
         console.log( [ 
             'appRoot: ' + this.appRoot
@@ -39,11 +40,17 @@ export default class App {
             , 'logDir: ' + this.logDir
             , 'cmd: ' + this.cmd
             ].join("\n") );
+        */
 
         this.init();
     }
 
     init() {
+        if( !shell.which( 'wget' ) ){
+            console.error( error( 'cnpmfilefix - wget command not found!' ) );
+            return;
+        }
+
         if( !shell.which( 'find' ) ){
             console.error( error( 'cnpmfilefix - find command not found!' ) );
             return;

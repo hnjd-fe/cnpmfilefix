@@ -22,7 +22,7 @@ var path = require('path');
 var merge = require('deepmerge');
 
 var APP_ROOT = path.resolve(__dirname, '..');
-var PROJECT_ROOT = process.env.PWD;
+var PROJECT_ROOT = process.env.PWD || process.cwd();
 
 var packJSON = require(APP_ROOT + '/package.json');
 var config = require(APP_ROOT + '/config.json');

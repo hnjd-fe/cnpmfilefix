@@ -102,13 +102,15 @@ var Project = function () {
             var dircmd = "sudo mkdir -p " + dir;
             var wgetcmd = "sudo wget --no-check-certificat " + resolveUrl + " -O " + item;
 
-            console.log("\n");
-            console.log('item', item);
-            console.log('dir', dir);
-            console.log('filepath', filepath);
-            console.log('resolveUrl', resolveUrl);
-            console.log('dircmd', dircmd);
-            console.log('wgetcmd', wgetcmd);
+            /*
+            console.info( "\n" );
+            console.info( 'item', item);
+            console.info( 'dir', dir );
+            console.info( 'filepath', filepath );
+            console.info( 'resolveUrl',  resolveUrl );
+            console.info( 'dircmd', dircmd );
+            */
+            console.info('wgetcmd', wgetcmd);
 
             _shelljs2.default.exec(dircmd);
             _shelljs2.default.exec(wgetcmd);
