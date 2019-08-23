@@ -23,81 +23,67 @@ export default class Project {
         this.app = app;
         this.info = this.app.projectInfo;
 
-        this.newFile = [];
-        this.modifiedFile = [];
-        this.allFile = [];
-
-        this.info.feuid.dir.map( ( item, index ) => {
-            this.info.feuid.dir[index] = item.replace( /[\/]+$/, '' );
-        });
-        this.dirRe = new RegExp( `^(${this.info.feuid.dir.join('|')})\/`, 'i');
-
-        this.newRe = /new[\s]+file:[\s]+(.*)/;
-        this.modifiedRe = /modified:[\s]+(.*)/;
-        this.fixRe = /^(\/|\\)/;
-        this.extensionRe = new RegExp( `\\.(vue)$`, 'i' );
-
         this.init();
     }
 
     init() {
+        console.log( this.app.cmd );
+
+        shell.exec( this.app.cmd, { silent: true }, ( code, stdout, stderr ) => {
+            //console.log( stdout, Date.now() );
+            let tmp = stdout.split( /[\r\n]+/g );
+            let tmpObj = {};
+            this.items = [];
+            tmp.map( ( item ) => {
+                //console.log( '-------', item, '-----------' );
+                item.replace( /no such file or directory.*?'(.*)?'/g, ( $0, $1 )=>{
+                    //console.log( $1, Date.now() );
+
+                    if( !( $1 in tmpObj ) ){
+                        tmpObj[$1] = $1;
+                        this.items.push( $1 );
+                    }
+                });
+            });
+
+            //console.log( this.items );
+            this.items.map( ( item )=>{
+                this.fixItem( item );
+            });
+        });
+    }
+
+    fixItem( item ) {
+        if( fs.existsSync( item  ) ){
+            console.log( warning( `file exists ${item}!` ) );
+            return;
+        }
+
+        let dir = item.replace( /\/\-\/.*/, '/-/' );
+        let filepath = item.replace( /.*?\/nfs\//g, '/' ).replace( /\/\-\//, '/download/');
+        let resolveUrl = `${this.info.config.resolveRegistry}${filepath}`;
+
+        let dircmd = `sudo mkdir -p ${dir}`;
+        let wgetcmd = `sudo wget --no-check-certificat ${resolveUrl} -O ${item}`;
+
+        console.log( "\n" );
+        console.log( 'item', item);
+        console.log( 'dir', dir );
+        console.log( 'filepath', filepath );
+        console.log( 'resolveUrl',  resolveUrl );
+        console.log( 'dircmd', dircmd );
+        console.log( 'wgetcmd', wgetcmd);
+
+        shell.exec( dircmd  );
+        shell.exec( wgetcmd );
     }
 
     initMethod() {
         //console.log( 'initMethod', Date.now() );
     }
 
-    getChangeFiles(){
-        let p = this;
-
-        if( this.app.program.full ){
-
-            p.info.feuid.dir.map( ( item ) => {
-                let globRe = `${p.info.projectRoot}/${item}/**/*.+(${p.info.feuid.extension.join('|')})`;
-                p.allFile = p.allFile.concat( glob.sync( globRe, {} ) );
-            });
-
-            return;
-        }
-
-        if( this.app.program.target ){
-            console.log( this.app.program.target );
-            p.allFile.push( path.resolve( this.app.program.target ) );
-            return;
-        }
-
-        let gitStatus, lines;
-        gitStatus = shell.exec( `cd '${this.info.currentRoot}' && git status`, { silent: true } );
-        lines = gitStatus.stdout.split( '\n' );
-
-        lines.map( ( item, index ) => {
-            item = item.trim();
-            item.replace( p.newRe, function( $0, $1 ){
-                p.fileReplaceAction( $0, $1, p.newFile )
-            });
-
-            item.replace( p.modifiedRe, function( $0, $1 ){
-                p.fileReplaceAction( $0, $1, p.modifiedFile )
-            });
-        });
+    fileExists( file ) {
+        return fs.existsSync( file );
     }
-
-    fileReplaceAction( $0, $1, ar ){
-        let info = this.info;
-        let p = this;
-
-        let fullpath = path.join( info.currentRoot, $1 );
-        let filepath =  fullpath.replace( info.projectRoot, '' ).replace( this.fixRe, '' );
-
-        if( this.extensionRe.test( $1 )
-            && p.dirRe.test( filepath )
-        ){
-            ar.push( fullpath );
-            p.allFile.push( fullpath );
-        }
-    }
-
-
-
 
 }

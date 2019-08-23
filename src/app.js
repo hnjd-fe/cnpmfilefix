@@ -15,7 +15,7 @@ const info = chalk.bold.blue;
 import * as CONST from './data/constant.js';
 import * as DATA from './data/data.js';
 
-import ProjectReplaceVUE from './ProjectReplaceVUE.js';
+import Project from './Project.js';
 
 export default class App {
     constructor( appRoot, projectRoot, packJSON, config, program, projectInfo ) {
@@ -27,30 +27,45 @@ export default class App {
         this.program = program;
         this.projectInfo = projectInfo;
 
-        /*
+        this.projectInfo.config.resolveRegistry = this.projectInfo.config.resolveRegistry.replace( /\/$/, '' );
+
+        this.logDir = path.join( this.projectRoot, this.projectInfo.config.logsPath  );
+        this.cmd = `find ${this.logDir} -type f -mtime ${this.projectInfo.config.lastDay} -exec ag "no such file or directory" {} \\;`
+
         console.log( info( packJSON.name ) );
         console.log( [ 
             'appRoot: ' + this.appRoot
             , 'projectRoot: ' + this.projectRoot 
+            , 'logDir: ' + this.logDir
+            , 'cmd: ' + this.cmd
             ].join("\n") );
-        */
 
         this.init();
     }
 
     init() {
-        if( (!shell.which( 'git' ) ) ){
-            console.error( error( 'feuid - git not exists' ) );
+        if( !shell.which( 'find' ) ){
+            console.error( error( 'cnpmfilefix - find command not found!' ) );
             return;
         }
 
-        if( (!fs.existsSync( `${this.projectRoot}/.git` ) ) ){
-            console.error( error( 'feuid - dir is not git' ) );
+        if( !shell.which( 'ag' ) ){
+            console.error( error( 'cnpmfilefix - ag command not found!' ) );
+            return;
+        }
+
+        if( (!fs.existsSync( this.logDir  ) ) ){
+            console.error( error( 'cnpmfilefix - logs dir not exists!' ) );
             return;
         }
 
 
-        this.project = new ProjectReplaceVUE( this );
+        if( (!fs.existsSync( `${this.projectRoot}/package.json` ) ) ){
+            console.error( error( 'cnpmfilefix - dir is npm project root!' ) );
+            return;
+        }
+
+        this.project = new Project( this );
     }
 
     fileExists( file ) {

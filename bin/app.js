@@ -36,9 +36,9 @@ var _data = require("./data/data.js");
 
 var DATA = _interopRequireWildcard(_data);
 
-var _ProjectReplaceVUE = require("./ProjectReplaceVUE.js");
+var _Project = require("./Project.js");
 
-var _ProjectReplaceVUE2 = _interopRequireDefault(_ProjectReplaceVUE);
+var _Project2 = _interopRequireDefault(_Project);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -62,13 +62,13 @@ var App = function () {
         this.program = program;
         this.projectInfo = projectInfo;
 
-        /*
-        console.log( info( packJSON.name ) );
-        console.log( [ 
-            'appRoot: ' + this.appRoot
-            , 'projectRoot: ' + this.projectRoot 
-            ].join("\n") );
-        */
+        this.projectInfo.config.resolveRegistry = this.projectInfo.config.resolveRegistry.replace(/\/$/, '');
+
+        this.logDir = _path2.default.join(this.projectRoot, this.projectInfo.config.logsPath);
+        this.cmd = "find " + this.logDir + " -type f -mtime " + this.projectInfo.config.lastDay + " -exec ag \"no such file or directory\" {} \\;";
+
+        console.log(info(packJSON.name));
+        console.log(['appRoot: ' + this.appRoot, 'projectRoot: ' + this.projectRoot, 'logDir: ' + this.logDir, 'cmd: ' + this.cmd].join("\n"));
 
         this.init();
     }
@@ -76,17 +76,27 @@ var App = function () {
     _createClass(App, [{
         key: "init",
         value: function init() {
-            if (!_shelljs2.default.which('git')) {
-                console.error(error('feuid - git not exists'));
+            if (!_shelljs2.default.which('find')) {
+                console.error(error('cnpmfilefix - find command not found!'));
                 return;
             }
 
-            if (!_fsExtra2.default.existsSync(this.projectRoot + "/.git")) {
-                console.error(error('feuid - dir is not git'));
+            if (!_shelljs2.default.which('ag')) {
+                console.error(error('cnpmfilefix - ag command not found!'));
                 return;
             }
 
-            this.project = new _ProjectReplaceVUE2.default(this);
+            if (!_fsExtra2.default.existsSync(this.logDir)) {
+                console.error(error('cnpmfilefix - logs dir not exists!'));
+                return;
+            }
+
+            if (!_fsExtra2.default.existsSync(this.projectRoot + "/package.json")) {
+                console.error(error('cnpmfilefix - dir is npm project root!'));
+                return;
+            }
+
+            this.project = new _Project2.default(this);
         }
     }, {
         key: "fileExists",

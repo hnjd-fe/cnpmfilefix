@@ -49,88 +49,79 @@ var info = _chalk2.default.bold.blue;
 
 var Project = function () {
     function Project(app) {
-        var _this = this;
-
         _classCallCheck(this, Project);
 
         this.app = app;
         this.info = this.app.projectInfo;
-
-        this.newFile = [];
-        this.modifiedFile = [];
-        this.allFile = [];
-
-        this.info.feuid.dir.map(function (item, index) {
-            _this.info.feuid.dir[index] = item.replace(/[\/]+$/, '');
-        });
-        this.dirRe = new RegExp("^(" + this.info.feuid.dir.join('|') + ")/", 'i');
-
-        this.newRe = /new[\s]+file:[\s]+(.*)/;
-        this.modifiedRe = /modified:[\s]+(.*)/;
-        this.fixRe = /^(\/|\\)/;
-        this.extensionRe = new RegExp("\\.(vue)$", 'i');
 
         this.init();
     }
 
     _createClass(Project, [{
         key: "init",
-        value: function init() {}
+        value: function init() {
+            var _this = this;
+
+            console.log(this.app.cmd);
+
+            _shelljs2.default.exec(this.app.cmd, { silent: true }, function (code, stdout, stderr) {
+                //console.log( stdout, Date.now() );
+                var tmp = stdout.split(/[\r\n]+/g);
+                var tmpObj = {};
+                _this.items = [];
+                tmp.map(function (item) {
+                    //console.log( '-------', item, '-----------' );
+                    item.replace(/no such file or directory.*?'(.*)?'/g, function ($0, $1) {
+                        //console.log( $1, Date.now() );
+
+                        if (!($1 in tmpObj)) {
+                            tmpObj[$1] = $1;
+                            _this.items.push($1);
+                        }
+                    });
+                });
+
+                //console.log( this.items );
+                _this.items.map(function (item) {
+                    _this.fixItem(item);
+                });
+            });
+        }
+    }, {
+        key: "fixItem",
+        value: function fixItem(item) {
+            if (_fs2.default.existsSync(item)) {
+                console.log(warning("file exists " + item + "!"));
+                return;
+            }
+
+            var dir = item.replace(/\/\-\/.*/, '/-/');
+            var filepath = item.replace(/.*?\/nfs\//g, '/').replace(/\/\-\//, '/download/');
+            var resolveUrl = "" + this.info.config.resolveRegistry + filepath;
+
+            var dircmd = "sudo mkdir -p " + dir;
+            var wgetcmd = "sudo wget --no-check-certificat " + resolveUrl + " -O " + item;
+
+            console.log("\n");
+            console.log('item', item);
+            console.log('dir', dir);
+            console.log('filepath', filepath);
+            console.log('resolveUrl', resolveUrl);
+            console.log('dircmd', dircmd);
+            console.log('wgetcmd', wgetcmd);
+
+            _shelljs2.default.exec(dircmd);
+            _shelljs2.default.exec(wgetcmd);
+        }
     }, {
         key: "initMethod",
         value: function initMethod() {
             //console.log( 'initMethod', Date.now() );
         }
     }, {
-        key: "getChangeFiles",
-        value: function getChangeFiles() {
-            var p = this;
-
-            if (this.app.program.full) {
-
-                p.info.feuid.dir.map(function (item) {
-                    var globRe = p.info.projectRoot + "/" + item + "/**/*.+(" + p.info.feuid.extension.join('|') + ")";
-                    p.allFile = p.allFile.concat(glob.sync(globRe, {}));
-                });
-
-                return;
-            }
-
-            if (this.app.program.target) {
-                console.log(this.app.program.target);
-                p.allFile.push(_path2.default.resolve(this.app.program.target));
-                return;
-            }
-
-            var gitStatus = void 0,
-                lines = void 0;
-            gitStatus = _shelljs2.default.exec("cd '" + this.info.currentRoot + "' && git status", { silent: true });
-            lines = gitStatus.stdout.split('\n');
-
-            lines.map(function (item, index) {
-                item = item.trim();
-                item.replace(p.newRe, function ($0, $1) {
-                    p.fileReplaceAction($0, $1, p.newFile);
-                });
-
-                item.replace(p.modifiedRe, function ($0, $1) {
-                    p.fileReplaceAction($0, $1, p.modifiedFile);
-                });
-            });
-        }
-    }, {
-        key: "fileReplaceAction",
-        value: function fileReplaceAction($0, $1, ar) {
-            var info = this.info;
-            var p = this;
-
-            var fullpath = _path2.default.join(info.currentRoot, $1);
-            var filepath = fullpath.replace(info.projectRoot, '').replace(this.fixRe, '');
-
-            if (this.extensionRe.test($1) && p.dirRe.test(filepath)) {
-                ar.push(fullpath);
-                p.allFile.push(fullpath);
-            }
+        key: "fileExists",
+        value: function fileExists(file) {
+            return _fs2.default.existsSync(file);
         }
     }]);
 

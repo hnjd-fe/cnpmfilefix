@@ -1,6 +1,10 @@
 #! /usr/bin/env node
 'use strict';
 
+var _shelljs = require('shelljs');
+
+var _shelljs2 = _interopRequireDefault(_shelljs);
+
 var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
@@ -15,7 +19,6 @@ var info = _chalk2.default.bold.blue;
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
-var shell = require('shelljs');
 var merge = require('deepmerge');
 
 var APP_ROOT = path.resolve(__dirname, '..');
@@ -27,7 +30,7 @@ var compareVersions = require('compare-versions');
 
 var program = require('commander');
 
-program.version(packJSON.version).option('-a, --auto', '使用 -s 初始化项目配置，并执行 -f 全量匹配并添加唯一ID').option('-s, --setup', '初始化项目配置，在根目录下生成feuid.js、package.json添加pre-commit勾子').option('-f, --full', '处理所有匹配的文件').option('-t, --target <target>', '处理指定文件').option('-u, --update', '更新已经生成的唯一ID').option('-p, --path <path>', '自定义项目路径，默认为当前路径');
+program.version(packJSON.version).option('-a, --auto', '使用 -s 初始化项目配置，并执行 -f 全量匹配并添加唯一ID').option('-s, --setup', '初始化项目配置，在根目录下生成cnpmfilefix.js、package.json添加pre-commit勾子').option('-f, --full', '处理所有匹配的文件').option('-t, --target <target>', '处理指定文件');
 program.parse(process.argv);
 
 if (program.auto) {
@@ -52,18 +55,18 @@ var init = require('./app').init;
 
 if (program.auto) {
     if (projectInfo.hasProjectMain && projectInfo.projectMainCmd) {
-        shell.exec(projectInfo.projectMainCmd + '--full');
+        _shelljs2.default.exec(projectInfo.projectMainCmd + '--full');
     } else {
         init(APP_ROOT, PROJECT_ROOT, packJSON, config, program, projectInfo);
     }
 } else if (!program.setup) {
     if (projectInfo.hasProjectMain && projectInfo.projectMainCmd) {
         if (program.full) {
-            shell.exec(projectInfo.projectMainCmd + '--full');
+            _shelljs2.default.exec(projectInfo.projectMainCmd + '--full');
         } else if (program.target) {
-            shell.exec(projectInfo.projectMainCmd + '--target');
+            _shelljs2.default.exec(projectInfo.projectMainCmd + '--target');
         } else {
-            shell.exec(projectInfo.projectMainCmd);
+            _shelljs2.default.exec(projectInfo.projectMainCmd);
         }
     } else {
         init(APP_ROOT, PROJECT_ROOT, packJSON, config, program, projectInfo);
@@ -72,8 +75,8 @@ if (program.auto) {
 
 function resolveMain(r) {
     r.appMain = path.join(r.appRoot, 'bin/main.js');
-    r.projectMain = path.join(r.projectRoot, 'node_modules/feuid/bin/main.js');
-    r.projectPack = path.join(r.projectRoot, 'node_modules/feuid/package.json');
+    r.projectMain = path.join(r.projectRoot, 'node_modules/cnpmfilefix/bin/main.js');
+    r.projectPack = path.join(r.projectRoot, 'node_modules/cnpmfilefix/package.json');
     r.hasProjectMain = false;
 
     if (fs.existsSync(r.projectPack)) {
@@ -85,7 +88,7 @@ function resolveMain(r) {
         }
     }
 
-    if (!shell.which('node')) {
+    if (!_shelljs2.default.which('node')) {
         return;
     }
 
@@ -101,9 +104,9 @@ function resolveMain(r) {
 
 function setupConfig(r) {
     if (!program.setup) return;
-    var projectConfig = r.projectRoot + '/feuid.config.js';
-    var modConfig = r.projectRoot + '/node_modules/feuid/feuid.config.js';
-    var appConfig = r.appRoot + '/feuid.config.js';
+    var projectConfig = r.projectRoot + '/cnpmfilefix.config.js';
+    var modConfig = r.projectRoot + '/node_modules/cnpmfilefix/cnpmfilefix.config.js';
+    var appConfig = r.appRoot + '/cnpmfilefix.config.js';
 
     if (!fs.existsSync(projectConfig)) {
         var target = fs.existsSync(modConfig) ? modConfig : '';
@@ -127,15 +130,12 @@ function setupPackage(r) {
     var pack = require(r.package);
     var install = [];
 
-    if (!('feuid' in pack.dependencies || 'feuid' in pack.devDependencies)) {
-        install.push('feuid');
-    }
-    if (!('pre-commit' in pack.dependencies || 'pre-commit' in pack.devDependencies)) {
-        install.push('pre-commit');
+    if (!('cnpmfilefix' in pack.dependencies || 'cnpmfilefix' in pack.devDependencies)) {
+        install.push('cnpmfilefix');
     }
 
     if (install.length) {
-        installPack(install, r);
+        //installPack( install, r );
         //shell.sleep( 5 );
         delete require.cache[require.resolve(r.package)];
         pack = require(r.package);
@@ -147,35 +147,21 @@ function setupPackage(r) {
 
     var writePack = 0;
 
-    if (!(pack.scripts && pack.scripts.feuid)) {
-        pack.scripts.feuid = 'node ./node_modules/feuid/bin/main.js';
+    if (!(pack.scripts && pack.scripts.cnpmfilefix)) {
+        pack.scripts.cnpmfilefix = 'node ./node_modules/cnpmfilefix/bin/main.js';
         writePack = 1;
-    }
-
-    if (!pack['pre-commit']) {
-        pack['pre-commit'] = ['feuid'];
-        writePack = 1;
-    }
-    if (!pack['pre-commit'].toString().indexOf('feuid') > -1) {
-        if (typeof pack['pre-commit'] == 'string') {
-            pack['pre-commit'] += ',feuid';
-            writePack = 1;
-        } else if (typeof pack['pre-comit'] == 'array') {
-            pack['pre-commit'].push('feuid');
-            writePack = 1;
-        }
     }
 
     if (writePack) {
-        fs.writeFileSync(r.package, JSON.stringify(pack, null, 2), { encoding: projectInfo.feuid.encoding || 'utf8' });
+        fs.writeFileSync(r.package, JSON.stringify(pack, null, 2), { encoding: projectInfo.cnpmfilefix.encoding || 'utf8' });
     }
 }
 
 function installPack(install, r) {
     var cmd = '';
-    if (shell.which('yarn')) {
+    if (_shelljs2.default.which('yarn')) {
         cmd = 'yarn add ' + install.join(' ');
-    } else if (shell.which('npm')) {
+    } else if (_shelljs2.default.which('npm')) {
         cmd = 'npm install ' + install.join(' ');
     }
 
@@ -183,7 +169,7 @@ function installPack(install, r) {
         console.log();
         console.log(info(cmd));
         console.log();
-        shell.exec('cd "' + r.projectRoot + '" && ' + cmd);
+        _shelljs2.default.exec('cd "' + r.projectRoot + '" && ' + cmd);
     } else {
         console.log(error('npm and yarn not exists'));
     }
@@ -216,7 +202,7 @@ function resolveProjectInfo(proot) {
 }
 
 function resolveConfig(r) {
-    r.feuid = merge.all([{}, fs.existsSync(r.appRoot + '/feuid.config.js') ? require(r.appRoot + '/feuid.config.js') : {}, fs.existsSync(r.projectRoot + '/feuid.config.js') ? require(r.projectRoot + '/feuid.config.js') : {}, fs.existsSync(r.currentRoot + '/feuid.config.js') ? require(r.currentRoot + '/feuid.config.js') : {}], { arrayMerge: function arrayMerge(destinationArray, sourceArray, options) {
+    r.config = merge.all([{}, fs.existsSync(r.appRoot + '/cnpmfilefix.config.js') ? require(r.appRoot + '/cnpmfilefix.config.js') : {}, fs.existsSync(r.projectRoot + '/cnpmfilefix.config.js') ? require(r.projectRoot + '/cnpmfilefix.config.js') : {}, fs.existsSync(r.currentRoot + '/cnpmfilefix.config.js') ? require(r.currentRoot + '/cnpmfilefix.config.js') : {}], { arrayMerge: function arrayMerge(destinationArray, sourceArray, options) {
             return sourceArray;
         } });
 }
