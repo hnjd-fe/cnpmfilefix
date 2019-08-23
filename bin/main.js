@@ -30,7 +30,7 @@ var compareVersions = require('compare-versions');
 
 var program = require('commander');
 
-program.version(packJSON.version).option('-a, --auto', '使用 -s 初始化项目配置，并执行 -f 全量匹配并添加唯一ID').option('-s, --setup', '初始化项目配置，在根目录下生成cnpmfilefix.js、package.json添加pre-commit勾子').option('-f, --full', '处理所有匹配的文件').option('-t, --target <target>', '处理指定文件');
+program.version(packJSON.version).option('-a, --auto', '使用 -s 初始化项目配置，并执行 -f 全量匹配并添加唯一ID').option('-s, --setup', '初始化项目配置，在根目录下生成cnpmfilefix.js、package.json添加pre-commit勾子').option('-f, --full', '处理所有匹配的文件');
 program.parse(process.argv);
 
 if (program.auto) {
