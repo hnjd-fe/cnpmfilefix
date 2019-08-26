@@ -20,7 +20,7 @@
     
 ## 其他操作
     
-### 设置提交命令指令: cnpmfilefix --setup 
+### 设置提交指令并拷贝配置文件: cnpmfilefix --setup 
     cd projectRoot && cnpmfilefix --setup
     
     # 这个指令自动添加1个npm模块 cnpmfilefix
