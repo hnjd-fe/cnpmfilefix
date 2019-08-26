@@ -1,7 +1,7 @@
 
 let result = {
     logsPath: "./dataDir/logs"
-    , lastDay: -7
+    , lastDay: -30
     , resolveRegistry: "https://registry.npm.taobao.org/"
 };
 
