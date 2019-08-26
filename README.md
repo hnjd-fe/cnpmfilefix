@@ -11,7 +11,7 @@
 
     * 使用 npm package.json 安装依赖的前端项目
 
-## 一键初始化 (切换到项目根目录, 然后执行以下命令)(执行完这条命令之后以后每次commit的时候会自动生成唯一ID)
+## 一键初始化 (切换到项目根目录, 然后执行以下命令)
     sudo npm install -g cnpmfilefix && cnpmfilefix --auto
 
 ## 安装全局指令
