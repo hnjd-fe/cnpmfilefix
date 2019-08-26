@@ -29,6 +29,11 @@ export default class Project {
     init() {
         console.log( this.app.cmd );
 
+        if( this.app.program.target ){
+			this.fixItem( this.resolveTarget( this.app.program.target ) );
+            return;
+        }
+
         shell.exec( this.app.cmd, { silent: true }, ( code, stdout, stderr ) => {
             //console.log( stdout, Date.now() );
             let tmp = stdout.split( /[\r\n]+/g );
@@ -53,7 +58,15 @@ export default class Project {
         });
     }
 
+	resolveTarget( target ){
+		let r = target;
+		r = r.replace( /\/download\//gi, '/-/' );
+        r = path.join( this.app.projectRoot, this.app.projectInfo.config.dataDir || './dataDir/nfs/', r );
+		return r;
+	}
+
     fixItem( item ) {
+		console.log( 'item', info( item ) );
         if( fs.existsSync( item  ) ){
             console.log( warning( `file exists ${item}!` ) );
             return;

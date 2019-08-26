@@ -31,6 +31,11 @@
     cd projectRoot && cnpmfilefix --full
     
     # 处理所有符合条件的文件
+
+### 处理指定文件指令: cnpmfilefix --target 
+    cd projectRoot && cnpmfilefix --target /feuid/download/feuid-1.0.21.tgz
+    
+    # 处理单个指定的文件
     
 ### 显示帮助指令: cnpmfilefix --help
     cnpmfilefix --help

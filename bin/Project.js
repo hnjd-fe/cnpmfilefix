@@ -64,6 +64,11 @@ var Project = function () {
 
             console.log(this.app.cmd);
 
+            if (this.app.program.target) {
+                this.fixItem(this.resolveTarget(this.app.program.target));
+                return;
+            }
+
             _shelljs2.default.exec(this.app.cmd, { silent: true }, function (code, stdout, stderr) {
                 //console.log( stdout, Date.now() );
                 var tmp = stdout.split(/[\r\n]+/g);
@@ -88,8 +93,17 @@ var Project = function () {
             });
         }
     }, {
+        key: "resolveTarget",
+        value: function resolveTarget(target) {
+            var r = target;
+            r = r.replace(/\/download\//gi, '/-/');
+            r = _path2.default.join(this.app.projectRoot, this.app.projectInfo.config.dataDir || './dataDir/nfs/', r);
+            return r;
+        }
+    }, {
         key: "fixItem",
         value: function fixItem(item) {
+            console.log('item', info(item));
             if (_fs2.default.existsSync(item)) {
                 console.log(warning("file exists " + item + "!"));
                 return;
