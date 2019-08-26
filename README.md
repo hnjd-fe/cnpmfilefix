@@ -13,7 +13,7 @@
 ## 安装全局指令
     sudo npm install -g cnpmfilefix
 
-## 设置处理指令与配置文件、差处理最近30天的日志文件: cnpmfilefix --auto 
+## 设置处理指令与配置文件、并处理最近30天的日志文件: cnpmfilefix --auto 
     cd projectRoot && cnpmfilefix --auto
     
     # cnpmfilefix --auto = cnpmfilefix --setup && cnpmfilefix --full
