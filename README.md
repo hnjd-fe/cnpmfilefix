@@ -6,10 +6,6 @@
     使用原理：通过分析 cnpm 同步 log, 获取无法安装的npm安装包，然后通过taobao npm源下载缺失的安装包
     
     解决疼点：cnpm 私有源同步时丢失安装包，这个工具下载丢失的安装包到对应位置
-    
-## 适用范围
-
-    * 使用 npm package.json 安装依赖的前端项目
 
 ## 一键初始化 (切换到项目根目录, 然后执行以下命令)
     sudo npm install -g cnpmfilefix && cnpmfilefix --auto
