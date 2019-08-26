@@ -148,8 +148,10 @@ function setupPackage( r ){
         writePack = 1;
     }
 
+    console.log( projectInfo );
+
     if( writePack ){
-        fs.writeFileSync( r.package, JSON.stringify( pack, null, 2 ), { encoding: projectInfo.cnpmfilefix.encoding || 'utf8' } )
+        fs.writeFileSync( r.package, JSON.stringify( pack, null, 2 ), { encoding: projectInfo.config.encoding || 'utf8' } )
     }
 }
 
