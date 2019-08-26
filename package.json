@@ -1,6 +1,6 @@
 {
   "name": "cnpmfilefix",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "修复cnpm文件缺失",
   "main": "src/main.js",
   "bin": {
