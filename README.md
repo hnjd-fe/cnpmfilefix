@@ -48,7 +48,7 @@
 ## cnpmfilefix.config.js 说明
 	{
         logsPath: "./dataDir/logs/"                               //设置日志文件目录
-		, dataDir: "./dataDir/nfs/"							      //设置安装包根目录
+        , dataDir: "./dataDir/nfs/"                               //设置安装包根目录
         , lastDay: -30                                            //需要处理最近N天的日志
         , resolveRegistry: "https://registry.npm.taobao.org/"     //用于下载缺失文件的npm源
 	}
