@@ -130,6 +130,8 @@ function setupPackage(r) {
     var pack = require(r.package);
     var install = [];
 
+    pack.devDependencies = pack.devDependencies || {};
+
     if (!('cnpmfilefix' in pack.dependencies || 'cnpmfilefix' in pack.devDependencies)) {
         install.push('cnpmfilefix');
     }

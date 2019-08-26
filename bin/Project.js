@@ -103,7 +103,7 @@ var Project = function () {
     }, {
         key: "fixItem",
         value: function fixItem(item) {
-            console.log('item', info(item));
+            //console.log( 'item', info( item ) );
             if (_fs2.default.existsSync(item)) {
                 console.log(warning("file exists " + item + "!"));
                 return;
@@ -121,6 +121,7 @@ var Project = function () {
 
             var dircmd = sudo + " mkdir -p " + dir;
             var wgetcmd = sudo + " wget --no-check-certificat " + resolveUrl + " -O " + item;
+            var delcmd = sudo + " rm -rf " + item;
 
             /*
             console.info( "\n" );
@@ -133,7 +134,14 @@ var Project = function () {
             console.info('wgetcmd', wgetcmd);
 
             _shelljs2.default.exec(dircmd);
-            _shelljs2.default.exec(wgetcmd);
+            _shelljs2.default.exec(wgetcmd, function (code, stdout, stderr) {
+                if (/404 Not Found/i.test(stderr)) {
+                    if (/\/nfs\/[^\/]+\/\-\/[^\/]+\.tgz$/.test(item)) {
+                        console.log(info('not found: ' + item));
+                        _shelljs2.default.exec(delcmd);
+                    }
+                }
+            });
         }
     }, {
         key: "initMethod",

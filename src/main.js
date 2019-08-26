@@ -127,6 +127,8 @@ function setupPackage( r ){
     let pack = require( r.package );
     let install = [];
 
+    pack.devDependencies = pack.devDependencies || {};
+
     if( !( ( 'cnpmfilefix' in pack.dependencies ) || 'cnpmfilefix' in pack.devDependencies ) ){
         install.push( 'cnpmfilefix' );
     }

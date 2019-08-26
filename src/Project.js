@@ -66,7 +66,7 @@ export default class Project {
 	}
 
     fixItem( item ) {
-		console.log( 'item', info( item ) );
+		//console.log( 'item', info( item ) );
         if( fs.existsSync( item  ) ){
             console.log( warning( `file exists ${item}!` ) );
             return;
@@ -84,6 +84,7 @@ export default class Project {
 
         let dircmd = `${sudo} mkdir -p ${dir}`;
         let wgetcmd = `${sudo} wget --no-check-certificat ${resolveUrl} -O ${item}`;
+        let delcmd = `${sudo} rm -rf ${item}`;
 
         /*
         console.info( "\n" );
@@ -96,7 +97,17 @@ export default class Project {
         console.info( 'wgetcmd', wgetcmd);
 
         shell.exec( dircmd  );
-        shell.exec( wgetcmd );
+        shell.exec( 
+            wgetcmd
+            , ( code, stdout, stderr )=>{ 
+                if( /404 Not Found/i.test( stderr ) ){
+                    if( /\/nfs\/[^\/]+\/\-\/[^\/]+\.tgz$/.test( item ) ){
+                        console.log( info( 'not found: ' + item ) )
+                        shell.exec( delcmd );
+                    }
+                }
+            }
+        );
     }
 
     initMethod() {
