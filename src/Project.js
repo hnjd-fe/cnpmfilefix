@@ -34,6 +34,15 @@ export default class Project {
             return;
         }
 
+        if( this.app.program.check ){
+            this.resolveAll( true );
+            return;
+        }
+
+        this.resolveAll();
+    }
+
+    resolveAll( isCheck ){
         shell.exec( this.app.cmd, { silent: true }, ( code, stdout, stderr ) => {
             //console.log( stdout, Date.now() );
             let tmp = stdout.split( /[\r\n]+/g );
@@ -53,9 +62,22 @@ export default class Project {
 
             //console.log( this.items );
             this.items.map( ( item )=>{
-                this.fixItem( item );
+                if( isCheck ){
+                    this.checkItem( item );
+                } else {
+                    this.fixItem( item );
+                }
             });
         });
+
+    }
+
+    checkItem( item ){
+        if( fs.existsSync( item  ) ){
+            console.log( success( `file found ${item}!` ) );
+        }else{
+            console.log( error( `file not find ${item}!` ) );
+        }
     }
 
 	resolveTarget( target ){
