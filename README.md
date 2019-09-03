@@ -36,6 +36,11 @@
     cd projectRoot && cnpmfilefix --target /feuid/download/feuid-1.0.21.tgz
     
     # 处理单个指定的文件
+
+### 检查存在异常的文件: cnpmfilefix --check
+    cd projectRoot && cnpmfilefix --check
+    
+    # 检查存在异常的文件，该指令只做检查用，不进行实际文件操作
     
 ### 显示帮助指令: cnpmfilefix --help
     cnpmfilefix --help

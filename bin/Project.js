@@ -60,14 +60,24 @@ var Project = function () {
     _createClass(Project, [{
         key: "init",
         value: function init() {
-            var _this = this;
-
             console.log(this.app.cmd);
 
             if (this.app.program.target) {
                 this.fixItem(this.resolveTarget(this.app.program.target));
                 return;
             }
+
+            if (this.app.program.check) {
+                this.resolveAll(true);
+                return;
+            }
+
+            this.resolveAll();
+        }
+    }, {
+        key: "resolveAll",
+        value: function resolveAll(isCheck) {
+            var _this = this;
 
             _shelljs2.default.exec(this.app.cmd, { silent: true }, function (code, stdout, stderr) {
                 //console.log( stdout, Date.now() );
@@ -88,9 +98,22 @@ var Project = function () {
 
                 //console.log( this.items );
                 _this.items.map(function (item) {
-                    _this.fixItem(item);
+                    if (isCheck) {
+                        _this.checkItem(item);
+                    } else {
+                        _this.fixItem(item);
+                    }
                 });
             });
+        }
+    }, {
+        key: "checkItem",
+        value: function checkItem(item) {
+            if (_fs2.default.existsSync(item)) {
+                console.log(success("file found " + item + "!"));
+            } else {
+                console.log(error("file not find " + item + "!"));
+            }
         }
     }, {
         key: "resolveTarget",

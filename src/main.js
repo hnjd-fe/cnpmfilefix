@@ -27,6 +27,7 @@ program
     .option('-s, --setup', '初始化项目配置，在根目录下生成cnpmfilefix.js、package.json添加pre-commit勾子' )
     .option('-f, --full', '处理所有匹配的文件' )
     .option('-t, --target <target>', '处理指定文件' )
+    .option('-c, --check', '检查异常的文件' )
     ;
 program.parse(process.argv);
 
